@@ -1,0 +1,40 @@
+# General
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Build / output
+build/
+dist/
+out/
+
+# Node/npm
+node_modules/
+npm-debug.log
+
+# Archives and packages
+*.zip
+*.tar.gz
+
+# Large CAD / binary exports
+# These files can be large and are often better stored with Git LFS or outside git.
+# Uncomment any you want to ignore by default.
+# *.stl
+# *.step
+# *.igs
+# *.f3d
+# *.sldprt
+
+# Editor/temp files
+*.sublime-workspace
+*.sublime-project

@@ -1,0 +1,1 @@
+We are designing a Standalone Combat System, a self-sufficient military platform consisting of 11 integrated weapons and support systems. The goal is to create a digital prototype, simulations, CAD models, and technical documentation for each component. Everything should be organized in folder structure, ready for potential fabrication, without producing real weapons
