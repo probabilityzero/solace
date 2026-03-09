@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SETUP — Digital Engineering Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600&family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root { --bg: #08080a; --bg-elevated: #0f0f12; --card: #141418; --card-hover: #1a1a1f; --border: #252529; --border-accent: #00b4d8; --accent: #00d4ff; --accent-dim: #0891b2; --fg: #ffffff; --fg-muted: #5b6069; --fg-dim: #374151; --glow: rgba(0,212,255,0.15); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; }
+.font-display { font-family: 'Rajdhani', sans-serif; }
+.bg-grid { background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; }
+.bg-radial { background: radial-gradient(ellipse at 50% 0%, rgba(0,180,216,0.08) 0%, transparent 60%); }
+.hero-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, var(--glow) 0%, transparent 70%); pointer-events: none; filter: blur(80px); }
+.series-nav { backdrop-filter: blur(20px); background: rgba(8,8,10,0.8); border-bottom: 1px solid var(--border); }
+.series-btn { position: relative; padding: 0.75rem 1.25rem; font-weight: 500; color: var(--fg-muted); transition: color 0.3s ease, transform 0.2s ease; border: none; background: transparent; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 0.875rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.series-btn::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px; background: var(--accent); transition: width 0.3s ease, left 0.3s ease; }
+.series-btn:hover { color: var(--fg); }
+.series-btn.active { color: var(--accent); }
+.series-btn.active::after { width: 100%; left: 0; }
+.product-card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.4s ease; cursor: pointer; position: relative; }
+.product-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 40%, var(--glow) 100%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+.product-card:hover { transform: translateY(-4px); border-color: var(--border-accent); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 60px var(--glow); }
+.product-card:hover::before { opacity: 1; }
+.folder-structure { border-top: 1px solid var(--border); margin-top: 1rem; }
+.folder-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.2s ease; }
+.folder-item:last-child { border-bottom: none; }
+.folder-item:hover { background: rgba(0,212,255,0.05); }
+.folder-icon { width: 18px; height: 18px; color: var(--accent-dim); flex-shrink: 0; }
+.stat-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.625rem; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); border-radius: 2px; font-size: 0.75rem; color: var(--accent); font-weight: 500; }
+.series-section { opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.series-section.visible { opacity: 1; transform: translateY(0); }
+.series-header { position: relative; display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.series-number { font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--accent); letter-spacing: 0.2em; padding: 0.375rem 0.75rem; border: 1px solid var(--accent); border-radius: 2px; }
+.hero-title { animation: heroReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.hero-subtitle { animation: fadeInUp 0.8s ease forwards; animation-delay: 0.3s; opacity: 0; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes heroReveal { from { opacity: 0; transform: translateY(20px); letter-spacing: 0.5em; } to { opacity: 1; transform: translateY(0); letter-spacing: 0.3em; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body class="bg-grid">
+
+<nav class="series-nav sticky top-0 z-50 py-3 px-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div id="navTitle" class="font-display font-semibold tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors">
+SOLACE<span class="text-cyan-400">.</span>SERIES
+</div>
+<div class="flex items-center gap-2">
+<button class="series-btn active">Workflow</button>
+<button class="series-btn">Tools</button>
+<button class="series-btn">Outputs</button>
+</div>
+</div>
+</nav>
+
+<div class="relative bg-radial min-h-[70vh] flex items-center justify-center pt-16">
+<div class="hero-glow top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+<div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+<p class="stat-badge mb-6 hero-subtitle">Digital Engineering Lab</p>
+<h1 class="font-display text-5xl md:text-7xl font-semibold tracking-tight leading-tight hero-title">
+WEAPON SYSTEM<br>DEVELOPMENT
+</h1>
+<p class="text-lg text-gray-400 mt-6 max-w-2xl mx-auto hero-subtitle" style="animation-delay: 0.5s;">
+A compact workflow to produce concept briefs, system architecture, 3D models, simulation artifacts, and technical data packages for manufacturing.
+</p>
+</div>
+</div>
+
+<main class="max-w-7xl mx-auto px-6 py-16 space-y-24">
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">PHASE 01</span>
+<h2 class="font-display text-3xl tracking-wide">CONCEPT & DESIGN</h2>
+</div>
+<div class="grid md:grid-cols-2 gap-8">
+<div class="product-card p-6">
+<h3 class="font-display text-xl font-semibold mb-3 tracking-wide">Initial Concept Brief</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Define operational requirements, target performance metrics, and intended deployment scenarios. This forms the foundation for all subsequent engineering decisions.
+</p>
+<div class="folder-structure bg-[var(--bg-elevated)] -mx-6 -mb-6 mt-6">
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">requirements.pdf</p>
+<p class="text-xs text-gray-500">Mission profile & constraints</p>
+</div>
+</div>
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">sketches.png</p>
+<p class="text-xs text-gray-500">Initial form factor studies</p>
+</div>
+</div>
+</div>
+</div>
+<div class="product-card p-6">
+<h3 class="font-display text-xl font-semibold mb-3 tracking-wide">CAD / 3D Modeling</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Detailed 3D modeling in Fusion 360 or Blender. Focus on modular assemblies, material selection, and manufacturability constraints.
+</p>
+<div class="folder-structure bg-[var(--bg-elevated)] -mx-6 -mb-6 mt-6">
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">/cad_source</p>
+<p class="text-xs text-gray-500">Native assembly files</p>
+</div>
+</div>
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">export.stp</p>
+<p class="text-xs text-gray-500">STEP file for simulation</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">PHASE 02</span>
+<h2 class="font-display text-3xl tracking-wide">SIMULATION & ANALYSIS</h2>
+</div>
+<div class="product-card p-8">
+<div class="flex flex-col md:flex-row gap-8">
+<div class="flex-1">
+<h3 class="font-display text-xl font-semibold mb-3 tracking-wide">Engineering Validation</h3>
+<p class="text-gray-400 text-sm leading-relaxed">
+Run FEA stress tests, CFD aerodynamic analysis, and thermal simulations. Validate design against initial requirements before physical prototyping.
+</p>
+<div class="grid grid-cols-3 gap-4 mt-6">
+<div class="text-center p-3 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<p class="stat-badge text-xs mb-1">FEA</p>
+<p class="text-xs text-gray-500">Structural</p>
+</div>
+<div class="text-center p-3 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<p class="stat-badge text-xs mb-1">CFD</p>
+<p class="text-xs text-gray-500">Aerodynamics</p>
+</div>
+<div class="text-center p-3 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<p class="stat-badge text-xs mb-1">THERMAL</p>
+<p class="text-xs text-gray-500">Heat Dissipation</p>
+</div>
+</div>
+</div>
+<div class="flex-1 folder-structure bg-[var(--bg-elevated)] m-0 border-0">
+<div class="folder-item border-l-2 border-cyan-500 pl-4">
+<p class="text-sm font-medium text-white">/sim_results</p>
+<p class="text-xs text-gray-500">Raw simulation data</p>
+</div>
+<div class="folder-item border-l-2 border-transparent pl-4">
+<p class="text-sm font-medium text-white">stress_analysis.pdf</p>
+<p class="text-xs text-gray-500">Load case reports</p>
+</div>
+<div class="folder-item border-l-2 border-transparent pl-4">
+<p class="text-sm font-medium text-white">optimization_log.txt</p>
+<p class="text-xs text-gray-500">Iteration history</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">PHASE 03</span>
+<h2 class="font-display text-3xl tracking-wide">MANUFACTURING PREP</h2>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="product-card p-6">
+<h3 class="font-display text-lg font-semibold mb-3 tracking-wide">Technical Drawings</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+2D fabrication drawings with GD&T specifications for machine shops.
+</p>
+<span class="stat-badge">PDF / DWG</span>
+</div>
+<div class="product-card p-6">
+<h3 class="font-display text-lg font-semibold mb-3 tracking-wide">Bill of Materials</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Comprehensive parts list with material specs and vendor codes.
+</p>
+<span class="stat-badge">XLSX / CSV</span>
+</div>
+<div class="product-card p-6">
+<h3 class="font-display text-lg font-semibold mb-3 tracking-wide">CAM Files</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+G-code and toolpath files for CNC machining and fabrication.
+</p>
+<span class="stat-badge">NC / TAP</span>
+</div>
+</div>
+</section>
+
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">ARCHIVE</span>
+<h2 class="font-display text-3xl tracking-wide">PROJECT STRUCTURE</h2>
+</div>
+<div class="product-card p-0 overflow-hidden">
+<div class="font-mono text-sm">
+<div class="folder-item bg-[var(--bg-elevated)]">
+<svg class="folder-icon text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 10H6v-2h8v2zm4-4H6v-2h12v2z"></path></svg>
+<span class="text-white">PROJECT_NAME/</span>
+</div>
+<div class="folder-item pl-8">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+<span>01_Concept/</span>
+</div>
+<div class="folder-item pl-8">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+<span>02_CAD/</span>
+</div>
+<div class="folder-item pl-8">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+<span>03_Simulation/</span>
+</div>
+<div class="folder-item pl-8">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+<span>04_Manufacturing/</span>
+</div>
+<div class="folder-item pl-8">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+<span class="text-gray-300">README.md</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="border-t border-[var(--border)] py-8 mt-16">
+<div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="font-display text-xl font-semibold tracking-wider text-gray-400">ARSENAL</div>
+<div class="text-sm text-gray-500">Digital Engineering Lab — Concept to Manufacturing Workflow</div>
+<a href="index.html" class="text-sm text-gray-400 hover:text-cyan-400 transition-colors">Return Home</a>
+</div>
+</footer>
+
+<script>
+const navTitle = document.getElementById('navTitle');
+if (navTitle) navTitle.addEventListener('click', () => { window.location.href = 'index.html'; });
+
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+entry.target.classList.add('visible');
+}
+});
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.series-section').forEach(section => {
+observer.observe(section);
+});
+</script>
+</body>
+</html>
