@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOOLS — Digital Engineering Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600&family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root { --bg: #08080a; --bg-elevated: #0f0f12; --card: #141418; --card-hover: #1a1a1f; --border: #252529; --border-accent: #00b4d8; --accent: #00d4ff; --accent-dim: #0891b2; --fg: #ffffff; --fg-muted: #5b6069; --fg-dim: #374151; --glow: rgba(0,212,255,0.15); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; }
+.font-display { font-family: 'Rajdhani', sans-serif; }
+.bg-grid { background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; }
+.bg-radial { background: radial-gradient(ellipse at 50% 0%, rgba(0,180,216,0.08) 0%, transparent 60%); }
+.hero-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, var(--glow) 0%, transparent 70%); pointer-events: none; filter: blur(80px); }
+.series-nav { backdrop-filter: blur(20px); background: rgba(8,8,10,0.8); border-bottom: 1px solid var(--border); }
+.series-btn { position: relative; padding: 0.75rem 1.25rem; font-weight: 500; color: var(--fg-muted); transition: color 0.3s ease, transform 0.2s ease; border: none; background: transparent; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 0.875rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.series-btn::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px; background: var(--accent); transition: width 0.3s ease, left 0.3s ease; }
+.series-btn:hover { color: var(--fg); }
+.series-btn.active { color: var(--accent); }
+.series-btn.active::after { width: 100%; left: 0; }
+.product-card { background: var(--card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.4s ease; cursor: pointer; position: relative; }
+.product-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 40%, var(--glow) 100%); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+.product-card:hover { transform: translateY(-4px); border-color: var(--border-accent); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 60px var(--glow); }
+.product-card:hover::before { opacity: 1; }
+.folder-structure { border-top: 1px solid var(--border); margin-top: 1rem; }
+.folder-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.2s ease; }
+.folder-item:last-child { border-bottom: none; }
+.folder-item:hover { background: rgba(0,212,255,0.05); }
+.folder-icon { width: 18px; height: 18px; color: var(--accent-dim); flex-shrink: 0; }
+.stat-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.625rem; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); border-radius: 2px; font-size: 0.75rem; color: var(--accent); font-weight: 500; }
+.series-section { opacity: 0; transform: translateY(40px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.series-section.visible { opacity: 1; transform: translateY(0); }
+.series-header { position: relative; display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.series-number { font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--accent); letter-spacing: 0.2em; padding: 0.375rem 0.75rem; border: 1px solid var(--accent); border-radius: 2px; }
+.hero-title { animation: heroReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.hero-subtitle { animation: fadeInUp 0.8s ease forwards; animation-delay: 0.3s; opacity: 0; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes heroReveal { from { opacity: 0; transform: translateY(20px); letter-spacing: 0.5em; } to { opacity: 1; transform: translateY(0); letter-spacing: 0.3em; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tool-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: rgba(0,212,255,0.1); border: 1px solid var(--border); margin-bottom: 1rem; }
+</style>
+</head>
+<body class="bg-grid">
+
+<nav class="series-nav fixed top-0 left-0 right-0 z-50">
+<div class="max-w-7xl mx-auto flex items-center justify-between px-6 h-16">
+<div id="navTitle" class="font-display font-semibold tracking-widest text-gray-300 cursor-pointer hover:text-white transition-colors">
+SOLACE<span class="text-cyan-400">.</span>SERIES
+</div>
+<div class="flex items-center gap-2">
+<button class="series-btn" onclick="window.location.href='setup.html'">Workflow</button>
+<button class="series-btn active">Tools</button>
+<button class="series-btn">Outputs</button>
+</div>
+</div>
+</nav>
+
+<div class="relative bg-radial min-h-[60vh] flex items-center justify-center pt-16">
+<div class="hero-glow top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+<div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+<p class="stat-badge mb-6 hero-subtitle">Digital Engineering Lab</p>
+<h1 class="font-display text-5xl md:text-7xl font-semibold tracking-tight leading-tight hero-title">
+ENGINEERING<br>ARSENAL
+</h1>
+<p class="text-lg text-gray-400 mt-6 max-w-2xl mx-auto hero-subtitle" style="animation-delay: 0.5s;">
+Complete software and hardware stack for defense manufacturing—from initial concept to battlefield-ready production files.
+</p>
+</div>
+</div>
+
+<main class="max-w-7xl mx-auto px-6 py-16 space-y-24">
+
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">STACK 01</span>
+<h2 class="font-display text-3xl tracking-wide">MECHANICAL DESIGN</h2>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="product-card p-6">
+<div class="tool-icon">
+<svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+</div>
+<h3 class="font-display text-xl font-semibold mb-2 tracking-wide">CATIA / NX</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Industry standard for aerospace and defense. Surface modeling, large assembly management, and PLM integration for complex weapon systems.
+</p>
+<div class="stat-badge">SURFACE / SOLID</div>
+</div>
+<div class="product-card p-6">
+<div class="tool-icon">
+<svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+</div>
+<h3 class="font-display text-xl font-semibold mb-2 tracking-wide">SolidWorks</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Ground vehicles, small arms, and mechanical components. Extensive library of fasteners and standard hardware for rapid iteration.
+</p>
+<div class="stat-badge">MECHANICAL / ASSEMBLY</div>
+</div>
+<div class="product-card p-6">
+<div class="tool-icon">
+<svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+</div>
+<h3 class="font-display text-xl font-semibold mb-2 tracking-wide">Blender / Keyshot</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Photorealistic rendering and visualization for presentations, technical manuals, and concept validation before prototyping.
+</p>
+<div class="stat-badge">VISUALIZATION</div>
+</div>
+</div>
+</section>
+
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">STACK 02</span>
+<h2 class="font-display text-3xl tracking-wide">SIMULATION & ANALYSIS</h2>
+</div>
+<div class="product-card p-8">
+<div class="grid md:grid-cols-2 gap-8">
+<div>
+<h3 class="font-display text-xl font-semibold mb-4 tracking-wide">Physics Validation</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-6">
+Validate designs against real-world conditions before manufacturing. Critical for structural integrity, thermal management, and aerodynamic performance.
+</p>
+<div class="space-y-4">
+<div class="flex items-center gap-4 p-4 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<div class="stat-badge">FEA</div>
+<div>
+<p class="font-medium text-white">ANSYS / Abaqus</p>
+<p class="text-xs text-gray-500">Structural stress & fatigue analysis</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<div class="stat-badge">CFD</div>
+<div>
+<p class="font-medium text-white">OpenFOAM / Fluent</p>
+<p class="text-xs text-gray-500">Aerodynamics & heat transfer</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-4 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<div class="stat-badge">DYN</div>
+<div>
+<p class="font-medium text-white">LS-DYNA</p>
+<p class="text-xs text-gray-500">Impact & ballistics simulation</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="font-display text-xl font-semibold mb-4 tracking-wide">Key Outputs</h3>
+<div class="folder-structure bg-[var(--bg-elevated)]">
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">stress_report.pdf</p>
+<p class="text-xs text-gray-500">Factor of safety documentation</p>
+</div>
+</div>
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">thermal_data.csv</p>
+<p class="text-xs text-gray-500">Heat distribution metrics</p>
+</div>
+</div>
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">impact_sim.mp4</p>
+<p class="text-xs text-gray-500">Ballistic penetration test</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">STACK 03</span>
+<h2 class="font-display text-3xl tracking-wide">ELECTRONICS & SYSTEMS</h2>
+</div>
+<div class="grid md:grid-cols-2 gap-6">
+<div class="product-card p-6">
+<h3 class="font-display text-xl font-semibold mb-3 tracking-wide">PCB Design — Altium / KiCad</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Ruggedized circuit board design for guidance systems, fuze electronics, and communication modules. MIL-STD compliance checking.
+</p>
+<div class="grid grid-cols-2 gap-3 mt-4">
+<div class="text-center p-2 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<p class="text-xs text-gray-500">Schematics</p>
+<p class="text-sm text-white font-medium">.SCH</p>
+</div>
+<div class="text-center p-2 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<p class="text-xs text-gray-500">Layout</p>
+<p class="text-sm text-white font-medium">.PCB</p>
+</div>
+<div class="text-center p-2 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<p class="text-xs text-gray-500">Fabrication</p>
+<p class="text-sm text-white font-medium">Gerber</p>
+</div>
+<div class="text-center p-2 bg-[var(--bg-elevated)] border border-[var(--border)]">
+<p class="text-xs text-gray-500">BOM</p>
+<p class="text-sm text-white font-medium">.CSV</p>
+</div>
+</div>
+</div>
+<div class="product-card p-6">
+<h3 class="font-display text-xl font-semibold mb-3 tracking-wide">Control Systems — MATLAB</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Guidance algorithm development, flight dynamics simulation, and control loop tuning. Generates C code for embedded deployment.
+</p>
+<div class="folder-structure bg-[var(--bg-elevated)] -mx-6 -mb-6 mt-6">
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">guidance_v2.m</p>
+<p class="text-xs text-gray-500">Proportional navigation logic</p>
+</div>
+</div>
+<div class="folder-item">
+<svg class="folder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+<div>
+<p class="text-sm font-medium text-white">flight_control.c</p>
+<p class="text-xs text-gray-500">Generated embedded code</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">STACK 04</span>
+<h2 class="font-display text-3xl tracking-wide">MANUFACTURING</h2>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+<div class="product-card p-6">
+<h3 class="font-display text-lg font-semibold mb-2 tracking-wide">CAM — Mastercam</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+5-axis CNC toolpath generation for complex geometries. Post-processors for industrial machine shops.
+</p>
+<span class="stat-badge">G-CODE / NC</span>
+</div>
+<div class="product-card p-6">
+<h3 class="font-display text-lg font-semibold mb-2 tracking-wide">Additive — EOS / SLM</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Metal powder bed fusion for lightweight structures and conformal cooling channels. Direct manufacturing capability.
+</p>
+<span class="stat-badge">STL / 3MF</span>
+</div>
+<div class="product-card p-6">
+<h3 class="font-display text-lg font-semibold mb-2 tracking-wide">Quality — CMM / GOM</h3>
+<p class="text-gray-400 text-sm leading-relaxed mb-4">
+Optical scanning and coordinate measuring for quality assurance. GD&T verification against CAD models.
+</p>
+<span class="stat-badge">INSPECTION</span>
+</div>
+</div>
+</section>
+
+<section class="series-section">
+<div class="series-header">
+<span class="series-number">INFRA</span>
+<h2 class="font-display text-3xl tracking-wide">DATA MANAGEMENT</h2>
+</div>
+<div class="product-card p-6">
+<div class="flex flex-col md:flex-row gap-8 items-center">
+<div class="flex-1">
+<p class="text-gray-400 text-sm leading-relaxed">
+Secure configuration management for all engineering artifacts. Version control, revision history, and access control for classified projects.
+</p>
+</div>
+<div class="flex gap-4 flex-wrap justify-center">
+<div class="stat-badge">GIT / GITLAB</div>
+<div class="stat-badge">PLM</div>
+<div class="stat-badge">ENCRYPTED STORAGE</div>
+<div class="stat-badge">AIR-GAP READY</div>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+
+<footer class="border-t border-[var(--border)] py-8 mt-16">
+<div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="font-display text-xl font-semibold tracking-wider text-gray-400">ARSENAL</div>
+<div class="text-sm text-gray-500">Digital Engineering Lab — Complete Defense Manufacturing Stack</div>
+<a href="index.html" class="text-sm text-gray-400 hover:text-cyan-400 transition-colors">Return Home</a>
+</div>
+</footer>
+
+<script>
+const navTitle = document.getElementById('navTitle');
+if (navTitle) navTitle.addEventListener('click', () => { window.location.href = 'index.html'; });
+
+const observer = new IntersectionObserver((entries) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+entry.target.classList.add('visible');
+}
+});
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.series-section').forEach(section => {
+observer.observe(section);
+});
+</script>
+</body>
+</html>
